@@ -41,5 +41,3 @@ def get_outfit_for(r, id):
     matching_items = [y for x in matching_items for y in x]
     matching_items = [x.decode('utf-8') for x in matching_items]
     return matching_items
-    print(matching_items)
-
