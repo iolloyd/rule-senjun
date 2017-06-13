@@ -19,6 +19,15 @@ def get_labels():
     q = "select id, name from labels"
     return [(x['id'], x['name'].replace(' ', '_')) for x in query(q)]
 
+def get_items(item_list):
+    if not item_list:
+        return []
+    ids = ','.join(item_list) 
+    q = "select * from items where id in ({})".format(ids)
+    print(q)
+
+    return [x for x in query(q)]
+
 def get_items_labels():
     q = """
     SELECT i.id, 

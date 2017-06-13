@@ -2,7 +2,7 @@ import sys
 import redis
 import itertools
 from functools import reduce
-from db import get_items_labels, get_labels
+from db import get_items, get_items_labels, get_labels
 from redis_conn import r
 
 def combos(lst):
@@ -27,15 +27,16 @@ def get_matching(labels, matches):
     matching = [matches[x] for x in matches if x in labels][0]
     print('matching rules', matching)
     labels = ['label:{}'.format(x) for x in matching]
-    print(labels)
     matches = [r.smembers(x) for x in labels]
     matches = [clean(list(x)) for x in matches]
     matches = [y for x in matches for y in x]
+
     return matches
 
 
 def clean(lst):
     return [x.decode('utf-8') for x in lst]
+
 
 def get_members(key):
     keys = ':'.join(sorted(key.split(':')))
@@ -48,8 +49,7 @@ def get_outfit_type(labels, keys):
     labels = ['label:{}'.format(x) for x in labels]
     x = r.sunion(labels)
     x = clean(x)
-    return set(x).intersection(set(keys))
-                   
+    return list(set(x).intersection(set(keys)))
 
 
 def get_outfit_items(id, matches):
@@ -62,10 +62,6 @@ def get_outfit_items(id, matches):
         "shoes": get_outfit_type(['heels', 'heel', 'boots'], keys), 
         "bag": get_outfit_type(['bag', 'clutch', 'purse', 'wallet'], keys) 
     }
-
-
-def maybe(lst):
-    return lst and lst[0] or False
 
 
 def store_items_labels(labels):
@@ -94,9 +90,12 @@ def normalize_keys(keys):
     keys = [':'.join(sorted(key.split(':'))) for key in keys]
     return keys
 
-def show_item(item):
-    for x in item:
-        print(x, item[x])
+def get_item(item):
+    return {'shoes': get_items(item['shoes']),
+            'bag': get_items(item['bag']),
+            'top': get_items(item['bottom']),
+            'bottom': get_items(item['top'])
+            }
 
 if __name__ == '__main__':
     item_id = sys.argv[1]
@@ -112,7 +111,8 @@ if __name__ == '__main__':
                'v-neck:sweater': ['skinny:jean']
                }
 
-    init()
+    # init()
     x = get_outfit_items(sys.argv[1], matches)
-    show_item(x)
+    x = get_item(x)
+    print(x)
     
