@@ -1,3 +1,5 @@
+import itertools
+
 def slugify(x):
     return x.replace(' ', '_').lower()
 
@@ -11,4 +13,7 @@ def combos(lst):
     out = [x for x in out if x]
     return [':'.join(x) for x in list(set(out))]
 
+
+def cartesian(*t):
+    return [list(x) for x in itertools.product(*t)]
 

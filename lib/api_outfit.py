@@ -35,4 +35,4 @@ def basics():
     return json.dumps(items)
 
 
-run(host='localhost', port=3002)
+run(host='localhost', port=3003)

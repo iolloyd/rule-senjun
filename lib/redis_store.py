@@ -4,7 +4,8 @@ import itertools
 from functools import reduce
 from db import get_items, get_items_labels, get_labels
 from redis_conn import r
-from helpers import combos
+from helpers import combos, cartesian
+
 
 def add_match(left, rights): 
     for right in rights:
@@ -49,7 +50,6 @@ def get_outfit_type(labels, keys):
         return list(set(x).intersection(set(keys)))
     except:
         print(sys.exc_info)
-
 
 
 def get_outfit_items(id):
@@ -103,12 +103,14 @@ def normalize_keys(keys):
     keys = [':'.join(sorted(key.split(':'))) for key in keys]
     return keys
 
+
 def get_item(item):
     return {'shoes': get_items(item['shoes']),
             'bag': get_items(item['bag']),
             'top': get_items(item['bottom']),
             'bottom': get_items(item['top'])
             }
+
 
 def get_matches():
     return {'boyfriend:jean': ['button:down:shirt'], 
@@ -119,6 +121,7 @@ def get_matches():
             'skinny:jean': ['v-neck:sweater'],
             'v-neck:sweater': ['skinny:jean']
             }
+
 
 if __name__ == '__main__':
     init()
