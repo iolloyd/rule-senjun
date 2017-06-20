@@ -70,6 +70,13 @@ def get_outfit_items(id):
     return result
 
 
+def get_outfits(outfit_items):
+    vals = [outfit_items[x] 
+            for x in outfit_items if not outfit_items[x] == []
+            ]
+    return cartesian(*vals)
+
+
 def store_items_labels(labels):
     for x in labels:
         id, name, label = x['id'], x['name'], x['label']
