@@ -67,7 +67,7 @@ def get_outfit_items(id):
         "bag": get_outfit_type(['bag', 'clutch', 'purse', 'wallet'], keys) 
     }
 
-    return result
+    return get_outfits(result)
 
 
 def get_outfits(outfit_items):

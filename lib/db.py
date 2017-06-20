@@ -37,17 +37,14 @@ def get_images(ids):
     GROUP BY i.id
     """
     results = {} 
-    for x in ids.keys():
-        if not ids[x]:
-            continue
-        try:
-            qry = q.format(','.join(ids[x]))
-            results[x] = query(qry)
-        except:
-            print(sys.exc_info()[1])
-            print('key', x)
+    ids = [y for x in ids for y in x]
+    ids = [x for x in ids if not x == []]
+    if not ids:
+        return None
+    qry = q.format(','.join(map(str, ids)))
+    results = query(qry)
 
-    return replace_values(results, base_url)
+    return [x for x in results]
 
 
 def replace_values(dict_like, str):

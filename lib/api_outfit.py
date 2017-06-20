@@ -22,7 +22,9 @@ def enable_cors(fn):
 @enable_cors
 def items(id):
     items = get_outfit_items(id)
+    print('items', items)
     items_with_images = get_images(items)
+    print(items_with_images)
 
     return json.dumps(items_with_images)
 
