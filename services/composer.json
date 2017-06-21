@@ -1,6 +1,0 @@
-{
-    "require": {
-        "predis/predis": "^1.1",
-        "league/plates": "^3.3"
-    }
-}
