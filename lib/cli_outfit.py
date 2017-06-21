@@ -1,7 +1,9 @@
 import sys
+import json
 from services import (items as api_items, 
                       basics as api_basics,
-                      outfits as api_outfits
+                      outfits as api_outfits,
+                      outfits_with_images as api_outfits_with_images
                       )
 
 def items(id, *args):
@@ -15,6 +17,9 @@ def basics(*args):
 def outfits(id, *args):
     return api_outfits(id)
 
+def outfits_with_images(id, *args):
+    result = api_outfits_with_images(id)
+    return json.dumps(result)
 
 if __name__ == '__main__':
     def _handle_command(cmd, *args):
