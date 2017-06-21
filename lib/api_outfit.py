@@ -4,6 +4,7 @@ from subprocess import PIPE, run as subrun
 from os.path import basename, dirname, realpath
 from db import get_basics, get_items, get_items_labels, get_images
 from redis_store import get_outfit_items
+from services import items as api_items, basics as api_basics
 import json
 
 
@@ -20,21 +21,14 @@ def enable_cors(fn):
 
 @route('/items/<id>/matches', method=['GET', 'OPTIONS'])
 @enable_cors
-def items(id):
-    items = get_outfit_items(id)
-    print('items', items)
-    items_with_images = get_images(items)
-    print(items_with_images)
-
-    return json.dumps(items_with_images)
+def get_items(id):
+    return items(id)
 
 
 @route('/basics', method=['GET', 'OPTIONS'])
 @enable_cors
-def basics():
-    items = [(x['id'], x['imageName']) for x in get_basics()]
-
-    return json.dumps(items)
+def get_basics():
+    return basics()
 
 
 run(host='localhost', port=3003)
