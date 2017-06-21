@@ -37,11 +37,6 @@ def get_images(ids):
     WHERE i.id = im.itemId
     GROUP BY i.id
     """
-    results = {} 
-    ids = [y for x in ids for y in x]
-    ids = [x for x in ids if not x == []]
-    if not ids:
-        return None
     qry = q.format(','.join(map(str, ids)))
     results = query(qry)
 
@@ -69,7 +64,6 @@ def get_items(item_list):
     WHERE i.id in ({})
     """.format(ids)
 
-    print(q)
     return [x for x in query(q)]
 
 
