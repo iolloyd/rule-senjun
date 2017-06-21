@@ -15,7 +15,7 @@ def basics(*args):
 
 
 def outfits(id, *args):
-    return api_outfits(id)
+    return json.dumps(api_outfits(id))
 
 def outfits_with_images(id, *args):
     result = api_outfits_with_images(id)
