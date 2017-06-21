@@ -1,5 +1,8 @@
 import sys
-from services import items as api_items, basics as api_basics
+from services import (items as api_items, 
+                      basics as api_basics,
+                      outfits as api_outfits
+                      )
 
 def items(id, *args):
     return api_items(id)
@@ -7,6 +10,10 @@ def items(id, *args):
 
 def basics(*args):
     return api_basics()
+
+
+def outfits(id, *args):
+    return api_outfits(id)
 
 
 if __name__ == '__main__':
