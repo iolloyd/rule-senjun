@@ -1,1 +1,3 @@
 *.pyc
+composer.lock
+*/vendor/
