@@ -1,10 +1,11 @@
+import os
 import sys
 import MySQLdb
 from MySQLdb.cursors import DictCursor
 from helpers import slugify
 
-db = MySQLdb.connect(user='root', 
-                     passwd='root', 
+db = MySQLdb.connect(user=os.environ['EWEAR_DB_USER'], 
+                     passwd=os.environ['EWEAR_DB_PWD'],
                      db='ewear',
                      cursorclass=DictCursor)
 c = db.cursor()
