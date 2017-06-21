@@ -6,7 +6,7 @@ from helpers import slugify
 
 db = MySQLdb.connect(user=os.environ['EWEAR_DB_USER'], 
                      passwd=os.environ['EWEAR_DB_PWD'],
-                     db='ewear',
+                     db=os.environ['EWEAR_DB_NAME'],
                      cursorclass=DictCursor)
 c = db.cursor()
 
