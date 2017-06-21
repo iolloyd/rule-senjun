@@ -14,7 +14,6 @@ def items(id):
 
 def basics():
     items = [(x['id'], x['imageName']) for x in get_basics()]
-
     return json.dumps(items)
 
 
