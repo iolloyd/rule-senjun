@@ -99,13 +99,6 @@ def store_matches(matches):
         add_match(key, match) 
 
 
-def init():
-    r.flushdb()
-    items_labels = get_items_labels()
-    print(items_labels)
-    store_items_labels(items_labels)
-
-
 def normalize_keys(keys):
     keys = [':'.join(sorted(key.split(':'))) for key in keys]
     return keys
@@ -121,13 +114,19 @@ def get_item(item):
 
 def get_matches():
     return {'boyfriend:jean': ['button:down:shirt'], 
-            'button:down:shirt': ['boyfriend:jean', 'clutch:bag', 'heels'],
-            'button:down:shirt:solid': ['jean'],
+            'button:down:shirt': ['boyfriend:jean', 'bag', 'heels'],
             'black:tank:top': ['moto:jacket'],
             'moto:jacket': ['black:tank:top'],
             'skinny:jean': ['v-neck:sweater'],
             'v-neck:sweater': ['skinny:jean']
             }
+
+
+def init():
+    r.flushdb()
+    items_labels = get_items_labels()
+    print(items_labels)
+    store_items_labels(items_labels)
 
 
 if __name__ == '__main__':
