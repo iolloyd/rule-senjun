@@ -1,5 +1,4 @@
 from bottle import route, run, response
-from subprocess import PIPE, run as subrun
 from os.path import basename, dirname, realpath
 from db import get_basics, get_items, get_items_labels, get_images
 from redis_store import get_outfit_items
