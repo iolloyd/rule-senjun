@@ -13,4 +13,4 @@ ADD . /opt/app
 
 EXPOSE 3300
 
-CMD ["python3", "lib/cli_outfit.py"]
+CMD ["python3", "lib/cli_outfit.py", "28292"]

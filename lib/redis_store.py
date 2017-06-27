@@ -114,11 +114,12 @@ def get_item(item):
 
 def get_matches():
     return {'boyfriend:jean': ['button:down:shirt'], 
-            'button:down:shirt': ['boyfriend:jean', 'bag', 'heels'],
+            'button:down:shirt': ['boyfriend:jean', 'clutch:bag', 'heels'],
             'black:tank:top': ['moto:jacket'],
             'moto:jacket': ['black:tank:top'],
             'skinny:jean': ['v-neck:sweater'],
-            'v-neck:sweater': ['skinny:jean']
+            'v-neck:sweater': ['skinny:jean'],
+            'red:shoe': ['black:blazer', 'black:jean']
             }
 
 

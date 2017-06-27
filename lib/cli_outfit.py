@@ -1,5 +1,6 @@
 import sys
 import json
+from pprint import pprint
 from services import (items as api_items, 
                       basics as api_basics,
                       outfits as api_outfits,
@@ -17,9 +18,11 @@ def basics(*args):
 def outfits(id, *args):
     return json.dumps(api_outfits(id))
 
+
 def outfits_with_images(id, *args):
     result = api_outfits_with_images(id)
     return json.dumps(result)
+
 
 if __name__ == '__main__':
     def _handle_command(cmd, *args):
@@ -44,4 +47,4 @@ if __name__ == '__main__':
 
     cmd = sys.argv[1]
     result = _handle_command(cmd, *sys.argv[2:])
-    print(result)
+    pprint(result)
