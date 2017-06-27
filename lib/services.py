@@ -22,14 +22,13 @@ def items(id):
 
 
 def basics():
-    items = [(x['id'], x['imageName']) 
-             for x in get_basics()]
+    items = [(x['id'], x['imageName']) for x in get_basics()]
     return json.dumps(items)
 
 
 def outfits(id):
     item_outfits = get_outfit_items(id)
-    return [x for x in sorted(item_outfits) if len(x) == 3]
+    return [x for x in sorted(item_outfits[:400]) if len(x) == 3]
 
 def outfits_with_images(id):
     item_outfits = outfits(id)

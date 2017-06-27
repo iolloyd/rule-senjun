@@ -1,6 +1,5 @@
 import sys
 import json
-from pprint import pprint
 from services import (items as api_items, 
                       basics as api_basics,
                       outfits as api_outfits,
@@ -47,4 +46,4 @@ if __name__ == '__main__':
 
     cmd = sys.argv[1]
     result = _handle_command(cmd, *sys.argv[2:])
-    pprint(result)
+    print(result)
