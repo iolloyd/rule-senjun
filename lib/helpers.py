@@ -3,7 +3,6 @@ from itertools import product, groupby
 def slugify(x):
     return x.replace(' ', '_').lower()
 
-
 def combos(lst):
     out = [] 
     for L in range(0, len(lst)+1):
@@ -15,30 +14,33 @@ def combos(lst):
 
 
 def cartesian(*t):
-    return sorted([list(x) for x in product(*t, repeat=1)])
+    t = sorted(t, key=len, reverse=True)
+    t = [x for x in t if not x == []]
+    return [list(x) for x in product(*t)]
 
 
-def filtered_combos(lst):
-    seen = [] 
-    results = []
-    for y in lst:
-        for x in y:
-            print(x)
-            # keys = [frozenset([x[0], x[1]]), frozenset([x[0], x[2]]), frozenset([x[1], x[2]])]
-            # matches = [x for x in set(seen) if x in keys] 
-            if not matches:
-                results.append(x)
-            for k in keys:
-                seen.append(k) 
+def filtered_combos(lsts):
+    seen = set() 
+    combos = []
+    for x in lsts:
+        to_check = [(x[i], x[i+1]) for i in range(0, len(x)-2)]
+        to_check += [(x[i], x[i+2]) for i in range(0, len(x)-2)]
+        to_check += [(x[i+1], x[i+2]) for i in range(0, len(x)-2)]
+        match = [x for x in to_check if x in seen]
+        if not match: 
+            combos.append(x)
+            for x in to_check: seen.add(x)
 
-    return results
+    return sorted(combos)
 
 
 if __name__ == '__main__':
-    data = [['a1', 'a2', 'a3'],
-            ['b1', 'b2', 'b3'],
-            ['c1', 'c2', 'c3']]
+    data = [['a1', 'a2', 'a3' ],
+            ['b1', 'b2', 'b3', 'b4'],
+            ['c1', 'c2', 'c3'],
+            ]
 
     prod = cartesian(*data)
     x = filtered_combos(prod)
-    print(x)
+    for a in x:
+        print(a)
