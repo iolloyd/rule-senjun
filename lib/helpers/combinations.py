@@ -1,14 +1,11 @@
-from itertools import product, groupby
+from itertools import product
 
-def slugify(x):
-    return x.replace(' ', '_').lower()
 
 def combos(lst):
     out = [] 
     for L in range(0, len(lst)+1):
         for subset in itertools.permutations(lst, L):
             out.append(subset)
-
     out = [x for x in out if x]
     return [':'.join(x) for x in list(set(out))]
 
@@ -30,17 +27,6 @@ def filtered_combos(lsts):
         if not match: 
             combos.append(x)
             for x in to_check: seen.add(x)
-
     return sorted(combos)
 
 
-if __name__ == '__main__':
-    data = [['a1', 'a2', 'a3' ],
-            ['b1', 'b2', 'b3', 'b4'],
-            ['c1', 'c2', 'c3'],
-            ]
-
-    prod = cartesian(*data)
-    x = filtered_combos(prod)
-    for a in x:
-        print(a)
