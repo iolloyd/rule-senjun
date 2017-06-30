@@ -3,6 +3,7 @@ from math import floor
 from bottle import route, run, response
 from os.path import basename, dirname, realpath
 from redis_store import get_outfit_items, get_outfits
+from helpers import filtered_combos
 from db import (get_basics, 
                 get_items, 
                 get_items_labels, 
@@ -13,28 +14,34 @@ base_url = 'https://s3.amazonaws.com/everywearcom/items/{}_thumb.jpg'
 
 def items_with_images(id):
     items = get_outfit_items(id)
-    items_with_images = get_images(items)
+    return get_images(items)
+
 
 
 def items(id):
     items = items_with_images(id)
+
     return json.dumps(items_with_images)
 
 
 def basics():
     items = [(x['id'], x['imageName']) for x in get_basics()]
+
     return json.dumps(items)
 
 
 def outfits(id):
     item_outfits = get_outfit_items(id)
-    return [x for x in sorted(item_outfits[:400]) if len(x) == 3]
+    item_outfits = [x for x in sorted(item_outfits[:400]) if len(x) == 3]
+
+    return filtered_combos(item_outfits)
 
 def outfits_with_images(id):
     item_outfits = outfits(id)
     result = [get_images(x) for x in item_outfits]
     result = [_get_image_path_list(x) for x in result]
     result = [x for x in result if len(x) == 3]
+
     return result
 
 
