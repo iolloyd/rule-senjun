@@ -119,7 +119,9 @@ def get_matches():
             'moto:jacket': ['black:tank:top'],
             'skinny:jean': ['v-neck:sweater'],
             'v-neck:sweater': ['skinny:jean'],
-            'red:shoe': ['black:blazer', 'black:jean']
+            'red:shoe': ['black:blazer', 'black:jean'],
+            'pencil:skirt': ['button:down:shirt:solid', 'dark:neutral:shoe',
+                             'bag:medium:neutral']
             }
 
 
