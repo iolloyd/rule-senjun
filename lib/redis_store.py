@@ -17,7 +17,7 @@ def add_match(left, rights):
 
 def get_matching(labels, matches):
     try:
-        matching = [matches[x] for x in matches if x in labels]
+        matching = [matches[x] for x in matches['plus'] if x in labels]
         if not matching:
             return []
 
@@ -26,7 +26,12 @@ def get_matching(labels, matches):
         matches = [clean(list(x)) for x in matches]
         matches = [y for x in matches for y in x]
 
-        return matches
+        but_nots = [matches[x] for x in matches['minus'] if x in labels]
+        but_nots = [r.smembers(x) for x in but_nots]
+        but_nots = [clean(list(x)) for x in but_nots]
+        but_nots = [y for x in but_nots for y in x]
+
+        return matches - but_nots
     except:
         print(sys.exc_info)
 
@@ -113,7 +118,8 @@ def get_item(item):
 
 
 def get_matches():
-    return {'boyfriend:jean': ['button:down:shirt'], 
+    return {
+        'plus': {'boyfriend:jean': ['button:down:shirt'], 
             'button:down:shirt': ['boyfriend:jean', 'clutch:bag', 'heels'],
             'black:tank:top': ['moto:jacket'],
             'moto:jacket': ['black:tank:top'],
@@ -122,7 +128,9 @@ def get_matches():
             'red:shoe': ['black:blazer', 'black:jean'],
             'pencil:skirt': ['button:down:shirt:solid', 'dark:neutral:shoe',
                              'bag:medium:neutral']
-            }
+            },
+        'minus': {
+        }
 
 
 def init():
