@@ -5,6 +5,7 @@ from functools import reduce
 from db import get_items, get_items_labels, get_labels
 from redis_conn import r
 from helpers import combos, cartesian
+import traceback
 
 
 def add_match(left, rights): 
@@ -17,23 +18,29 @@ def add_match(left, rights):
 
 def get_matching(labels, matches):
     try:
-        matching = [matches[x] for x in matches['plus'] if x in labels]
-        if not matching:
-            return []
-
+        matching = [matches['plus'][x] 
+                    for x in matches['plus'] 
+                    if x in labels]
+        if not matching: return []
         labels = ['label:{}'.format(x) for x in matching[0]]
-        matches = [r.smembers(x) for x in labels] 
-        matches = [clean(list(x)) for x in matches]
-        matches = [y for x in matches for y in x]
+        yes_matches = [r.smembers(x) for x in labels] 
+        yes_matches = [clean(list(x)) for x in yes_matches]
+        yes_matches = [y for x in yes_matches for y in x]
 
-        but_nots = [matches[x] for x in matches['minus'] if x in labels]
+        but_nots = [matches['minus'][x] 
+                    for x in matches['minus'] 
+                    if x in labels]
+        if not but_nots: return yes_matches
         but_nots = [r.smembers(x) for x in but_nots]
         but_nots = [clean(list(x)) for x in but_nots]
         but_nots = [y for x in but_nots for y in x]
 
         return matches - but_nots
-    except:
-        print(sys.exc_info)
+
+    except KeyError as e:
+        print('error in get_matching')
+        print(traceback.format_exc())
+        exit(1)
 
 
 def clean(lst):
@@ -54,17 +61,16 @@ def get_outfit_type(labels, keys):
         x = clean(x)
         return list(set(x).intersection(set(keys)))
     except:
-        print(sys.exc_info)
+        print('error in get_outfit_type')
+        print('labels', labels)
+        print('keys', keys)
+        print(sys.exc_info())
 
 
 def get_outfit_items(id):
     matches = get_matches()
     labels = clean(list(r.smembers('item:{}'.format(id))))
-    try:
-        keys = get_matching(labels, matches)
-    except:
-        print(sys.exc_info)
-
+    keys = get_matching(labels, matches)
     result = {
         "top": get_outfit_type(['topunder', 'topover'], keys),
         "bottom": get_outfit_type(['jean', 'trouser', 'skirt'], keys),
@@ -105,8 +111,7 @@ def store_matches(matches):
 
 
 def normalize_keys(keys):
-    keys = [':'.join(sorted(key.split(':'))) for key in keys]
-    return keys
+    return [':'.join(sorted(key.split(':'))) for key in keys]
 
 
 def get_item(item):
@@ -130,13 +135,14 @@ def get_matches():
                              'bag:medium:neutral']
             },
         'minus': {
+            'button:down:shirt': ['boot']
         }
+    }
 
 
 def init():
     r.flushdb()
     items_labels = get_items_labels()
-    print(items_labels)
     store_items_labels(items_labels)
 
 
