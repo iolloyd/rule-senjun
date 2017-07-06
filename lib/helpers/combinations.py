@@ -1,10 +1,11 @@
-from itertools import product
+from itertools import permutations, product
 
 
 def combos(lst):
+    print('combos', lst)
     out = [] 
     for L in range(0, len(lst)+1):
-        for subset in itertools.permutations(lst, L):
+        for subset in permutations(lst, L):
             out.append(subset)
     out = [x for x in out if x]
     return [':'.join(x) for x in list(set(out))]
