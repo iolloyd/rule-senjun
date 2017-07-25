@@ -30,14 +30,19 @@ def basics():
     return json.dumps(items)
 
 
-def outfits(id):
-    item_outfits = get_outfit_items(id)
+def outfits(idList):
+    results = set() 
+    for x in get_outfit_items(id):
+        results.add(x)
+    item_outfits = []
+    for x in range(1, 400):
+        item_outfits.append(results.pop())
     item_outfits = [x for x in sorted(item_outfits[:400]) if len(x) == 3]
 
     return filtered_combos(item_outfits)
 
-def outfits_with_images(id):
-    item_outfits = outfits(id)
+def outfits_with_images(ids):
+    item_outfits = outfits(idList)
     result = [get_images(x) for x in item_outfits]
     result = [_get_image_path_list(x) for x in result]
     result = [x for x in result if len(x) == 3]

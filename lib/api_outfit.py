@@ -1,10 +1,29 @@
 import bottle
-from bottle import route, run, response
-from subprocess import PIPE, run as subrun
-from os.path import basename, dirname, realpath
-from db import get_basics, get_items, get_items_labels, get_images
+from bottle import (
+        route, 
+        run, 
+        response
+        )
+from subprocess import (
+        PIPE, 
+        run as subrun
+        )
+from os.path import (
+        basename, 
+        dirname, 
+        realpath
+        )
+from db import (
+        get_basics, 
+        get_items, 
+        get_items_labels, 
+        get_images
+        )
 from redis_store import get_outfit_items
-from services import items as api_items, basics as api_basics
+from services import (
+        items as api_items, 
+        basics as api_basics
+        )
 import json
 
 
@@ -19,6 +38,11 @@ def enable_cors(fn):
 
     return _aux
 
+
+def show(data):
+    return json.dumps(data, default=str)
+
+
 @route('/items/<id>/matches', method=['GET', 'OPTIONS'])
 @enable_cors
 def get_items(id):
@@ -27,8 +51,8 @@ def get_items(id):
 
 @route('/basics', method=['GET', 'OPTIONS'])
 @enable_cors
-def get_basics():
-    return basics()
+def basics():
+    return show(get_basics())
 
 
 run(host='localhost', port=3003)

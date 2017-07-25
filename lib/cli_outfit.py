@@ -1,10 +1,11 @@
 import sys
 import json
-from services import (items as api_items, 
-                      basics as api_basics,
-                      outfits as api_outfits,
-                      outfits_with_images as api_outfits_with_images
-                      )
+from services import (
+    items as api_items, 
+    basics as api_basics,
+    outfits as api_outfits,
+    outfits_with_images as api_outfits_with_images
+    )
 
 def items(id, *args):
     return api_items(id)
