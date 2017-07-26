@@ -29,7 +29,7 @@ if __name__ == '__main__':
         try:
             return globals()[cmd](*args)
         except KeyError:
-            print('Unknown command:', cmd)
+            print('Unknown command. Please use either outfits or outfits_with_images:', cmd)
 
     def _handle_error(choice):
         msgs = {

@@ -52,9 +52,11 @@ def get_outfit_type(labels, keys):
         print(sys.exc_info)
 
 
-def get_outfit_items(id):
+def get_outfit_items(ids):
     matches = get_matches()
-    labels = clean(list(r.smembers('item:{}'.format(id))))
+    labelsLists = [clean(list(r.smembers('item:{}'.format(id))))
+                   for id in ids]
+    labels = [x for xs in labelsLists for x in xs]
     try:
         keys = get_matching(labels, matches)
     except:
@@ -72,7 +74,8 @@ def get_outfit_items(id):
 
 def get_outfits(outfit_items):
     vals = [outfit_items[x] 
-            for x in outfit_items if not outfit_items[x] == []
+            for x in outfit_items 
+            if not outfit_items[x] == []
             ]
     return cartesian(*vals)
 

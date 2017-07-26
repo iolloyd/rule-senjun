@@ -4,44 +4,35 @@ from bottle import route, run, response
 from os.path import basename, dirname, realpath
 from redis_store import get_outfit_items, get_outfits
 from helpers import filtered_combos
-from db import (get_basics, 
-                get_items, 
-                get_items_labels, 
-                get_images
-                )
+from db import (get_basics, get_items, get_items_labels, get_images)
 
 base_url = 'https://s3.amazonaws.com/everywearcom/items/{}_thumb.jpg'
 
-def items_with_images(id):
-    items = get_outfit_items(id)
+def items_with_images(idList):
+    items = get_outfit_items(idList)
     return get_images(items)
 
 
 
-def items(id):
-    items = items_with_images(id)
-
-    return json.dumps(items_with_images)
+def items(ids):
+    items_and_images = items_with_images(ids)
+    return json.dumps(items_and_images)
 
 
 def basics():
-    items = [(x['id'], x['imageName']) for x in get_basics()]
-
+    items = [(x['id'], x['imageName']) 
+             for x in get_basics()
+            ]
     return json.dumps(items)
 
 
 def outfits(idList):
-    results = set() 
-    for x in get_outfit_items(id):
-        results.add(x)
-    item_outfits = []
-    for x in range(1, 400):
-        item_outfits.append(results.pop())
+    item_outfits = get_outfit_items(idList)
     item_outfits = [x for x in sorted(item_outfits[:400]) if len(x) == 3]
 
     return filtered_combos(item_outfits)
 
-def outfits_with_images(ids):
+def outfits_with_images(idList):
     item_outfits = outfits(idList)
     result = [get_images(x) for x in item_outfits]
     result = [_get_image_path_list(x) for x in result]
