@@ -10,6 +10,7 @@ base_url = 'https://s3.amazonaws.com/everywearcom/items/{}_thumb.jpg'
 
 def items_with_images(idList):
     items = get_outfit_items(idList)
+    print(items)
     return get_images(items)
 
 
@@ -29,11 +30,11 @@ def basics():
 def outfits(idList):
     item_outfits = get_outfit_items(idList)
     item_outfits = [x for x in sorted(item_outfits[:400]) if len(x) == 3]
-
     return filtered_combos(item_outfits)
 
 def outfits_with_images(idList):
     item_outfits = outfits(idList)
+    print('item_outfits', item_outfits)
     result = [get_images(x) for x in item_outfits]
     result = [_get_image_path_list(x) for x in result]
     result = [x for x in result if len(x) == 3]

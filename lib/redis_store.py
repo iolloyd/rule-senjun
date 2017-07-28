@@ -16,6 +16,7 @@ def add_match(left, rights):
 
 
 def get_matching(labels, matches):
+    labels = [x for y in labels for x in y]
     try:
         matching = [matches[x] for x in matches if x in labels]
         if not matching:
@@ -52,11 +53,10 @@ def get_outfit_type(labels, keys):
         print(sys.exc_info)
 
 
-def get_outfit_items(ids):
+def get_outfit_items(id):
     matches = get_matches()
-    labelsLists = [clean(list(r.smembers('item:{}'.format(id))))
-                   for id in ids]
-    labels = [x for xs in labelsLists for x in xs]
+    labels = [clean(list(r.smembers('item:{}'.format(id))))]
+    print('labels', labels)
     try:
         keys = get_matching(labels, matches)
     except:
