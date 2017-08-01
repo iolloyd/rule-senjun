@@ -12,10 +12,13 @@ c = db.cursor()
 
 base_url = 'https://s3.amazonaws.com/everywearcom/items/{}_thumb.jpg'
 
-def query(q):
-    c.execute(q)
-    return c.fetchall()
+def _query(conn):
+    def aux(q):
+        c.execute(q)
+        return c.fetchall()
+    return aux 
 
+query = _query(c)
 
 def get_tags():
     return [x for x in query('select id, slug from tags')]
@@ -28,11 +31,12 @@ def get_labels():
 
 def get_images(ids):
     q = """
-    SELECT 
-        i.id,
-        min(im.imageName) url
+    SELECT i.id, min(im.imageName) url
     FROM
-        (select id from bloomingdales_items where id in ({})) i,
+        (SELECT id 
+         FROM bloomingdales_items 
+         WHERE id IN ({})
+         ) i,
         images im
     WHERE i.id = im.itemId
     GROUP BY i.id
@@ -75,16 +79,28 @@ def get_basics():
     """
     return [x for x in query(q)]
 
+
 def get_items_labels():
     q = """
     SELECT i.id id, c.name name, c.type c_name
     FROM bloomingdales_items i 
          JOIN categories c 
-           ON i.categoryId = c.id 
-          AND i.storeId = 25
+           ON i.categoryId = c.id AND i.storeId = 25
     """
     return [{'id': x['id'],
              'name': slugify(x['name']),
              'label': slugify(x['c_name'])
              } for x in query(q)]
 
+
+def get_matching_rules():
+    q = """
+    SELECT label, matches
+    FROM label_matches
+    """
+    return [{'label': x['label'],
+             'matches': x['matches'].split(',')
+            } for x in query(q)]
+
+if __name__ == '__main__':
+    get_matching_rules()

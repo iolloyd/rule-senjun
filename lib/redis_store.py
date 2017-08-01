@@ -122,18 +122,7 @@ def get_matches():
             'moto:jacket': ['black:tank:top'],
             'skinny:jean': ['v-neck:sweater'],
             'v-neck:sweater': ['skinny:jean'],
-            'red:shoe': ['black:blazer', 'black:jean'],
+            'red:shoe': ['black:blazer', 'black:jean', 'satchel'],
             'pencil:skirt': ['button:down:shirt:solid', 'dark:neutral:shoe',
                              'bag:medium:neutral']
             }
-
-
-def init():
-    r.flushdb()
-    items_labels = get_items_labels()
-    print(items_labels)
-    store_items_labels(items_labels)
-
-
-if __name__ == '__main__':
-    init()
