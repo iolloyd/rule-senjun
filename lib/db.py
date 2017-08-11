@@ -8,9 +8,6 @@ db = MySQLdb.connect(user=os.environ['EWEAR_DB_USER'],
                      passwd=os.environ['EWEAR_DB_PWD'],
                      db=os.environ['EWEAR_DB_NAME'],
                      cursorclass=DictCursor)
-c = db.cursor()
-
-base_url = 'https://s3.amazonaws.com/everywearcom/items/{}_thumb.jpg'
 
 def _query(conn):
     def aux(q):
@@ -18,66 +15,17 @@ def _query(conn):
         return c.fetchall()
     return aux 
 
-query = _query(c)
+query = _query(db.cursor())
+
 
 def get_tags():
-    return [x for x in query('select id, slug from tags')]
+    q = "select id, slug from tags"
+    return [x for x in query(q)]
 
 
 def get_labels():
     q = "select id, name from labels"
     return [(x['id'], x['name'].replace(' ', '_')) for x in query(q)]
-
-
-def get_images(ids):
-    q = """
-    SELECT i.id, min(im.imageName) url
-    FROM
-        (SELECT id 
-         FROM bloomingdales_items 
-         WHERE id IN ({})
-         ) i,
-        images im
-    WHERE i.id = im.itemId
-    GROUP BY i.id
-    """
-    qry = q.format(','.join(map(str, ids)))
-    results = query(qry)
-
-    return [x for x in results]
-
-
-def replace_values(dict_like, str):
-    result = {}
-    for x in dict_like:
-        result[x] = [str.format(x['url'][:-4]) for x in dict_like[x]]
-
-    return result
-
-
-def get_items(item_list):
-    """base_url = 'https://s3.amazonaws.com/everywearcom/items/{}_web_chat.jpg'
-    """
-    if not item_list:
-        return []
-    ids = ','.join(item_list) 
-    q = """
-    SELECT i.id, replace(im.imageName, '.jpg', '') imageName
-    FROM bloomingdales_items i 
-    JOIN images im on i.id = im.itemId 
-    WHERE i.id in ({})
-    """.format(ids)
-
-    return [x for x in query(q)]
-
-
-def get_basics():
-    q = """
-    select b.*, im.imageName imageName
-    from basics b
-    join images im on b.id = im.itemId
-    """
-    return [x for x in query(q)]
 
 
 def get_items_labels():
@@ -94,13 +42,13 @@ def get_items_labels():
 
 
 def get_matching_rules():
-    q = """
-    SELECT label, matches
-    FROM label_matches
-    """
-    return [{'label': x['label'],
-             'matches': x['matches'].split(',')
+    q = "SELECT label, matches FROM label_matches"
+    return [{'label': x['label'], 
+             'matches': x['matches'].split(',') 
             } for x in query(q)]
 
+
 if __name__ == '__main__':
-    get_matching_rules()
+    matches = get_matching_rules()
+    for x in matches:
+        print(x)

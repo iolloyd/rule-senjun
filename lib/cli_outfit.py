@@ -1,49 +1,20 @@
 import sys
 import json
-from services import (
-    items as api_items, 
-    outfits as api_outfits,
-    outfits_with_images as api_outfits_with_images
-    )
-
-def items(id, *args):
-    return api_items(id)
+from redis_lib.query import get_outfits
 
 
-def basics(*args):
-    return api_basics()
-
-
-def outfits(id, *args):
-    return json.dumps(api_outfits(id))
-
-
-def outfits_with_images(id, *args):
-    result = api_outfits_with_images(id)
-    return json.dumps(result)
+def outfits(ids):
+    result = get_outfits(ids)
+    return [a for b in result for a in b]
 
 
 if __name__ == '__main__':
-    def _handle_command(cmd, *args):
-        try:
-            return globals()[cmd](*args)
-        except KeyError:
-            print('Unknown command. Please use either outfits or outfits_with_images:', cmd)
+    """Test load data using test/load.sh.
 
-    def _handle_error(choice):
-        msgs = {
-            'nocmd': 'Missing command. You must provide one',
-        }
-        try:
-            print(msgs[choice])
-            exit(1)
-        except:
-            print('Unknown command')
-            exit(1)
-
-    if len(sys.argv) < 1:
-        _handle_error('nocmd')
-
-    cmd = sys.argv[1]
-    result = _handle_command(cmd, *sys.argv[2:])
-    print(result)
+    run by the following command:
+        python3 cli_outfit.py 112 223
+    """
+    ids = sys.argv[1:]
+    print(ids)
+    results = outfits(ids)
+    print(results)

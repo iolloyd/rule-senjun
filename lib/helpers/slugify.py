@@ -1,3 +1,3 @@
-def slugify(x):
+def slugify(x): 
     return x.replace(' ', '_').lower()
 

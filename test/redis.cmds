@@ -1,0 +1,21 @@
+sadd label:furry:jumper 98 99 303 
+sadd item:98 label:furry:jumper  
+sadd item:99 label:furry:jumper  
+sadd item:303 label:furry:jumper  
+sadd label:fluffy:boots 45 48 49 
+sadd item:45 label:fluffy:boots 
+sadd item:48 label:fluffy:boots 
+sadd item:49 label:fluffy:boots 
+sadd label:sexy:boots 453 456 
+sadd item:453 label:sexy:boots 
+sadd item:456 label:sexy:boots 
+sadd label:leather:top 112 133 144 
+sadd item:112 label:leather:top 
+sadd item:133 label:leather:top 
+sadd item:144 label:leather:top 
+sadd label:leather:jeans 223 227 229 
+sadd item:223 label:leather:jeans 
+sadd item:227 label:leather:jeans 
+sadd item:229 label:leather:jeans 
+sadd rules:leather:top label:leather:jeans label:sexy:boots 
+sadd rules:fluffy:top label:fluffy:boots 
