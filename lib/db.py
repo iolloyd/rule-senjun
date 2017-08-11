@@ -9,6 +9,8 @@ db = MySQLdb.connect(user=os.environ['EWEAR_DB_USER'],
                      db=os.environ['EWEAR_DB_NAME'],
                      cursorclass=DictCursor)
 
+c = db.cursor()
+
 def _query(conn):
     def aux(q):
         c.execute(q)
@@ -16,11 +18,6 @@ def _query(conn):
     return aux 
 
 query = _query(db.cursor())
-
-
-def get_tags():
-    q = "select id, slug from tags"
-    return [x for x in query(q)]
 
 
 def get_labels():
@@ -48,7 +45,3 @@ def get_matching_rules():
             } for x in query(q)]
 
 
-if __name__ == '__main__':
-    matches = get_matching_rules()
-    for x in matches:
-        print(x)

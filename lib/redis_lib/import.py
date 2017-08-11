@@ -1,3 +1,39 @@
+import os
+import sys
+import MySQLdb
+import redis
+r = redis.Redis(host='localhost', port=6379, db=0) 
+from MySQLdb.cursors import DictCursor
+
+db = MySQLdb.connect(user=os.environ['EWEAR_DB_USER'], 
+                     passwd=os.environ['EWEAR_DB_PWD'],
+                     db=os.environ['EWEAR_DB_NAME'],
+                     cursorclass=DictCursor)
+c = db.cursor()
+
+
+def _query(conn):
+    def aux(q):
+        c.execute(q)
+        return c.fetchall()
+    return aux 
+
+query = _query(db.cursor())
+
+def get_matching_rules():
+    q = "SELECT label, matches FROM label_matches"
+    return [{'label': x['label'], 
+             'matches': x['matches'].split(',') 
+            } for x in query(q)]
+
+
+def get_labels():
+    q = "SELECT id, NAME FROM labels"
+    return [{'id': x['id'],
+             'name': x['NAME']
+            } for x in query(q)]
+
+
 def add_match(left, rights): 
     for right in rights:
         left = sorted(left.split(':'))
@@ -23,8 +59,34 @@ def store_items_labels(labels):
             r.sadd('label:{}'.format(y), id)
 
 
-def store_matches(matches):
-    for key, match in matches.items():
-        add_match(key, match) 
+def add_rule(rule):
+    for match in rule['matches']:
+        r.sadd('rules:{}'.format(rule['label']), match)
+        for part in rule['label'].split(':'):
+            r.sadd('rules:{}'.format(part), match)
 
+
+def add_label(label):
+    r.sadd(label['id'], label['name'])
+    
+
+def store_rules():
+    rules = [x for x in get_matching_rules() if not x['matches'] == ['']]
+    for x in rules:
+        add_rule(x)
+
+
+def store_labels():
+    labels = [x for x in get_labels() if not x['name'] == '']
+    for x in labels:
+        add_label(x)
+
+
+def import_to_redis():
+    store_rules() 
+    store_labels()
+
+
+if __name__ == '__main__':
+    import_to_redis()
 
