@@ -66,8 +66,9 @@ def add_rule(rule):
             r.sadd('rules:{}'.format(part), match)
 
 
-def add_label(label):
-    r.sadd(label['id'], label['name'])
+def add_item(label):
+    r.sadd('item:{}'.format(label['id']), label['name'])
+    r.sadd('label:{}'.format(label['name']), 'item:{}'.format(label['id']))
     
 
 def store_rules():
@@ -79,13 +80,12 @@ def store_rules():
 def store_labels():
     labels = [x for x in get_labels() if not x['name'] == '']
     for x in labels:
-        add_label(x)
+        add_item(x)
 
 
 def import_to_redis():
     store_rules() 
     store_labels()
-
 
 if __name__ == '__main__':
     import_to_redis()
