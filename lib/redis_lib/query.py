@@ -1,6 +1,7 @@
 import sys
-import itertools
+import itertools 
 import redis
+from functools import reduce
 
 r = redis.Redis(host='localhost', port=6379, db=0) 
 
@@ -8,46 +9,54 @@ r = redis.Redis(host='localhost', port=6379, db=0)
 def cartesian(*t):
     t = sorted(t, key=len, reverse=True)
     t = [x for x in t if not x == []]
-    return [list(x) for x in product(*t)]
+    return [list(x) for x in itertools.product(*t)]
 
 
 def clean(lst):
     return [x.decode('utf-8') for x in lst]
 
 
+def outfits_from_ids(ids):
+    tops = has_label(['label:top'], ids)
+    bottoms = has_label(['label:skirt'], ids)
+    heels = has_label(['label:heel'], ids)
+    return cartesian(tops, bottoms, heels)
+
+
 def get_outfits(ids):
-    """In redis, we manually set relations. For each of the 'rules', we
-    add the key as a member of the set 'rules:list'.
-    example:
+    """
+        In redis, we manually set relations. For each of the 'rules', we
+        add the key as a member of the set 'rules:list'.
+        example:
         rules:fluffy:boots => label:fluffy:top label:fluffy:coat label: furry:hat
         rules:leather:top  => label:sexy:boots label:leather:jeans
-
         rules:list => rules:fluffy:boots rules:leather:top
-
-    1. For each id, fetch the labels it has. 
+        1. For each id, fetch the labels it has. 
         // item:453 = ['label:sexy:boots']
-
-    2. Find any rules that have a key that matches. 
+        2. Find any rules that have a key that matches. 
         // rules:sexy:boots = ['label:leather:jeans', 'label:leather:top']
-
-    3. Find item ids that have those labels. 
+        3. Find item ids that have those labels. 
         // label:leather:jeans = [223, 227, 229] 
         // label:leather:top = [112, 133, 144]
-
-    4. Find the ids that exist in all the results.
-        //  [1 2 3   5 6], 
-        //    [2 3 4 5] 
-        //    [2   4 5 6 7 8] 
-        //  = [2 3   5]
+        4. Find the ids that exist in all the results.
+        //  [1 2 3 _ 5 6 _ _], 
+        //  [_ 2 3 4 5 _ _ _] 
+        //  [_ 2 _ 4 5 6 7 8] 
+        // =[_ 2 _ _ 5 _ _ _]
     """
     items = ['item:{}'.format(item_id) for item_id in ids]
-    labels = list(itertools.chain([get_labels(item_id) for item_id in items]))
-    label_rules = [x.replace('label:', 'rules:') for y in labels for x in y]
-    list_of_rules = clean(r.smembers('rules:list'))
-    matching_rule_keys = [x for x in list_of_rules if x in label_rules]
-    rules_to_labels = [x.replace('rules:', 'label:') for x in list_of_rules]
-    matching_ids = [clean(r.smembers(x)) for x in rules_to_labels]
-    return labels
+    labels = list(map(get_labels, items))
+    labels = list(reduce(set.intersection, map(set, labels)))
+    labels = ['label:{}'.format(x) for x in labels]
+    label_rules = [x.replace('label:', 'rules:') for x in labels]
+    matching = [clean(r.smembers(x)) for x in label_rules]
+    m_rules = [x for y in matching for x in y]
+    m_rules = [x.split(':') for x in m_rules]
+    m_rules = [x for y in m_rules for x in y]
+    m_labels = ['label:{}'.format(x) for x in m_rules]
+    ids = [clean(r.smembers(x)) for x in m_labels]
+    ids = [x for y in ids for x in y] 
+    return outfits_from_ids(ids)
 
 
 def get_labels(item_id):
@@ -73,7 +82,6 @@ def get_matching(labels):
 
 def has_label(labels, keys):
     try:
-        labels = [x for x in labels]
         x = r.sunion(labels)
         x = clean(x)
         return list(set(x).intersection(set(keys)))
@@ -81,17 +89,10 @@ def has_label(labels, keys):
         print(sys.exc_info)
 
 
-def get_outfit_items(id):
-    labels = [clean(list(r.smembers('item:{}'.format(id))))]
-    print('labels', labels)
-    keys = get_matching(labels)
-    result = {
-        "top": has_label(['topunder', 'topover'], keys),
-        "bottom": has_label(['jean', 'trouser', 'skirt'], keys),
-        "shoes": has_label(['heels', 'heel', 'boots'], keys), 
-        "bag": has_label(['bag', 'clutch', 'purse', 'wallet'], keys) 
-    }
-
-    return get_outfits(result)
+def get_outfit_items(ids):
+    pass
 
 
+if __name__ == '__main__':
+    outfits = get_outfits(sys.argv[1:])
+    print(outfits)
