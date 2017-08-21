@@ -22,15 +22,15 @@ query = _query(db.cursor())
 
 def get_matching_rules():
     q = "SELECT label, matches FROM label_matches"
-    return [{'label': x['label'], 
-             'matches': x['matches'].split(',') 
+    return [{'label': x['label'].lower(), 
+             'matches': [s.lower() for s in x['matches'].split(',')]
             } for x in query(q)]
 
 
 def get_labels():
     q = "SELECT id, NAME FROM labels"
     return [{'id': x['id'],
-             'name': x['NAME']
+             'name': x['NAME'].lower()
             } for x in query(q)]
 
 
@@ -42,51 +42,38 @@ def add_match(left, rights):
         r.sadd('match:{}'.format(right), left)
 
 
-def store_items_labels(labels):
-    for x in labels:
-        id, name, label = x['id'], x['name'], x['label']
-        r.sadd('item:{}'.format(id), name)
-        r.sadd('label:{}'.format(name), id)
-        r.sadd('item:{}'.format(id), label)
-        r.sadd('label:{}'.format(label), id)
-
-        for y in combos(name.split('_')):
-            r.sadd('item:{}'.format(id), y)
-            r.sadd('label:{}'.format(y), id)
-
-        for y in combos(label.split('_')):
-            r.sadd('item:{}'.format(id), y)
-            r.sadd('label:{}'.format(y), id)
-
-
 def add_rule(rule):
+    label = rule['label']
+    print('add rule: label', label)
     for match in rule['matches']:
-        r.sadd('rules:{}'.format(rule['label']), match)
-        for part in rule['label'].split(':'):
+        r.sadd('rules:{}'.format(label), match)
+        for part in label.split(':'):
+            print('add rule for part', part, match)
             r.sadd('rules:{}'.format(part), match)
 
 
 def add_item(label):
+    print('adding item', label['id'], label['name'])
     r.sadd('item:{}'.format(label['id']), label['name'])
+    print('adding label member to ', label['name'], label['id'])
     r.sadd('label:{}'.format(label['name']), 'item:{}'.format(label['id']))
     
 
 def store_rules():
-    rules = [x for x in get_matching_rules() if not x['matches'] == ['']]
+    print('storing rules')
+    rules = (x for x in get_matching_rules() if not x['matches'] == [''])
     for x in rules:
         add_rule(x)
 
 
 def store_labels():
-    labels = [x for x in get_labels() if not x['name'] == '']
+    print('storing labels')
+    labels = (x for x in get_labels() if not x['name'] == '')
     for x in labels:
         add_item(x)
 
 
-def import_to_redis():
+if __name__ == '__main__':
     store_rules() 
     store_labels()
-
-if __name__ == '__main__':
-    import_to_redis()
 
