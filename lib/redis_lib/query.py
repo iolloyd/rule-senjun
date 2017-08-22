@@ -24,22 +24,14 @@ def combos(*lsts):
 def fill(lst, count):
     c = len(lst)
     if (c >= count):
-        retun lst
+        return lst
     return lst + [lst[-1]] * (count - c)
 
 
-def padded(*t):
-    longest = max(len(x) for x in t)
-    for i in range(0, longest):
-        
-
-    t = [x for x in t if not x == []]
-    outfits = []
-    for x in range(0, longest):
-        outfits.append([i[ave_idx(i, x) - 1] for i in t])
-
-    return outfits
-
+def matched_outfits(*t):
+    longest = reduce(max, [len(x) for x in t])
+    t = map(lambda x, y=longest: fill(x, y), t)
+    return list(zip(*t))
 
 def clean(lst):
     return [x.decode('utf-8') for x in lst]
@@ -49,7 +41,7 @@ def outfits_from_ids(ids):
     tops = has_label(['label:top'], ids)
     bottoms = has_label(['label:skirt'], ids)
     heels = has_label(['label:heel'], ids)
-    return padded(tops, bottoms, heels)
+    return matched_outfits(tops, bottoms, heels)
 
 
 def get_outfits(ids):
@@ -124,4 +116,3 @@ def get_outfit_items(ids):
 
 if __name__ == '__main__':
     outfits = get_outfits(sys.argv[1:])
-    [print(x) for x in outfits]
