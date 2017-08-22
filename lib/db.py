@@ -25,13 +25,13 @@ def get_labels():
     return [(x['id'], x['name'].replace(' ', '_')) for x in query(q)]
 
 
-def get_items_labels():
+def get_items_labels(store_id):
     q = """
     SELECT i.id id, c.name name, c.type c_name
     FROM bloomingdales_items i 
          JOIN categories c 
-           ON i.categoryId = c.id AND i.storeId = 25
-    """
+           ON i.categoryId = c.id AND i.storeId = {} 
+    """.format(store_id)
     return [{'id': x['id'],
              'name': slugify(x['name']),
              'label': slugify(x['c_name'])
@@ -43,5 +43,3 @@ def get_matching_rules():
     return [{'label': x['label'], 
              'matches': x['matches'].split(',') 
             } for x in query(q)]
-
-
