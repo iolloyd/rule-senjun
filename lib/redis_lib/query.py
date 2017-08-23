@@ -6,6 +6,14 @@ from functools import reduce
 
 r = redis.Redis(host='localhost', port=6379, db=0) 
 
+def cyclic(lst, count):
+    if len(lst) >= count:
+        return lst
+    buffer = lst[:]
+    while (len(buffer) < count):
+        buffer = buffer + lst
+    return buffer[:count]
+
 def combos_aux(active, tail, a):
     if (not active) and (not tail):
         return
@@ -30,7 +38,7 @@ def fill(lst, count):
 
 def matched_outfits(*t):
     longest = reduce(max, [len(x) for x in t])
-    t = map(lambda x, y=longest: fill(x, y), t)
+    t = map(lambda x, y=longest: cyclic(x, y), t)
     return list(zip(*t))
 
 
@@ -50,15 +58,16 @@ def contains_label(label, item_id):
 
 def all_have_label(label, lst):
     matches = [x for x in lst if contains_label(label, x)]
-    return len(matches) === lst
+    return len(matches) == lst
 
 
-def filtered_outfits(outfits, filter_label):
-    outfits = [x for x in outfits if all_have_label(filter_label, x)]
+def filtered_outfits(outfits, filter_labels):
+    for label in filter_labels:
+        outfits = [x for x in outfits if all_have_label(label, x)]
     return outfits
 
 
-def get_outfits(ids):
+def get_outfits(ids, filters=None):
     """
         In redis, we manually set relations. For each of the 'rules', we
         add the key as a member of the set 'rules:list'.
@@ -92,8 +101,10 @@ def get_outfits(ids):
     ids = [clean(r.smembers(x)) for x in m_labels]
     ids = [x for y in ids for x in y] 
     outfits = outfits_from_ids(ids)
-    outfits = filtered_outfits(outfits)
+    if (filters):
+        outfits = filtered_outfits(outfits, filters)
 
+    return outfits
 
 
 def get_labels(item_id):
@@ -131,4 +142,8 @@ def get_outfit_items(ids):
 
 
 if __name__ == '__main__':
-    outfits = get_outfits(sys.argv[1:])
+    args = sys.argv[1:]
+    ids = [x for x in args if not x.startswith('-')]
+    filters = [x.replace('-', '') for x in args if x.startswith('-')]
+    outfits = get_outfits(ids, filters)
+    print(outfits)
