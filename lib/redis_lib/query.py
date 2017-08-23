@@ -33,6 +33,7 @@ def matched_outfits(*t):
     t = map(lambda x, y=longest: fill(x, y), t)
     return list(zip(*t))
 
+
 def clean(lst):
     return [x.decode('utf-8') for x in lst]
 
@@ -42,6 +43,19 @@ def outfits_from_ids(ids):
     bottoms = has_label(['label:skirt'], ids)
     heels = has_label(['label:heel'], ids)
     return matched_outfits(tops, bottoms, heels)
+
+
+def contains_label(label, item_id):
+    return label in r.smembers('item:{}'.format(item_id))
+
+def all_have_label(label, lst):
+    matches = [x for x in lst if contains_label(label, x)]
+    return len(matches) === lst
+
+
+def filtered_outfits(outfits, filter_label):
+    outfits = [x for x in outfits if all_have_label(filter_label, x)]
+    return outfits
 
 
 def get_outfits(ids):
@@ -77,7 +91,9 @@ def get_outfits(ids):
     m_labels = ['label:{}'.format(x) for x in m_rules]
     ids = [clean(r.smembers(x)) for x in m_labels]
     ids = [x for y in ids for x in y] 
-    return outfits_from_ids(ids)
+    outfits = outfits_from_ids(ids)
+    outfits = filtered_outfits(outfits)
+
 
 
 def get_labels(item_id):
