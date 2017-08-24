@@ -19,6 +19,13 @@ another way to store combinations, so stayed with python anyway. It's backed by 
 TODO Provide an easy way to interface with popular relational databases,
 starting with MySql.
 
+## Usage
+
+To do anything useful, the rules engine needs data loaded from the database into redis using
+the following command:
+
+`python3 ./lib/redis_lib/import.py`
+
 
 
 

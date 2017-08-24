@@ -146,4 +146,5 @@ if __name__ == '__main__':
     ids = [x for x in args if not x.startswith('-')]
     filters = [x.replace('-', '') for x in args if x.startswith('-')]
     outfits = get_outfits(ids, filters)
-    print(outfits)
+    for x in outfits:
+        print(x)
