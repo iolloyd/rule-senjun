@@ -1,3 +1,4 @@
+import json
 import sys
 import itertools 
 import math
@@ -146,5 +147,5 @@ if __name__ == '__main__':
     ids = [x for x in args if not x.startswith('-')]
     filters = [x.replace('-', '') for x in args if x.startswith('-')]
     outfits = get_outfits(ids, filters)
-    for x in outfits:
-        print(x)
+    outfits = json.dumps(outfits)
+    print(outfits)
