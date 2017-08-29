@@ -101,6 +101,7 @@ def get_outfits(ids, filters=None):
     m_labels = ['label:{}'.format(x) for x in m_rules]
     ids = [clean(r.smembers(x)) for x in m_labels]
     ids = [x for y in ids for x in y] 
+    ids = ["item:{}".format(x.replace('item:', '')) for x in ids]
     outfits = outfits_from_ids(ids)
     if (filters):
         outfits = filtered_outfits(outfits, filters)
