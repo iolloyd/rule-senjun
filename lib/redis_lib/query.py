@@ -139,10 +139,6 @@ def has_label(labels, keys):
         print(sys.exc_info)
 
 
-def get_outfit_items(ids):
-    pass
-
-
 if __name__ == '__main__':
     args = sys.argv[1:]
     ids = [x for x in args if not x.startswith('-')]
