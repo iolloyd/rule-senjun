@@ -3,7 +3,7 @@ anyjson==0.3.3
 appdirs==1.4.3
 appnope==0.1.0
 bitmapist==3.99
-bleach==2.0.0
+bleach==3.1.1
 bottle==0.12.13
 certifi==2017.4.17
 chardet==3.0.4
