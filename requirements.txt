@@ -5,7 +5,7 @@ appnope==0.1.0
 bitmapist==3.99
 bleach==3.1.4
 bottle==0.12.13
-certifi==2017.4.17
+certifi==2022.12.7
 chardet==3.0.4
 circus==0.14.0
 circus-web==1.0.0
